@@ -1,0 +1,13 @@
+1.使用const string&可以防止我们输入的input在程序运行时被更改，使用string可能会导致程序运行时更改了原来的input，因为在nextToken函数中还要判断pos与input的size的大小关系，还要读取input里的内容，因此用const string&防止input被改变。
+const string&既可以左值引用，又可以右值引用，支持移动语义。
+传引用是绑一个别名，而传值需要复制，使用const string&而不是string可以防止不必要的复制。
+
+2.如果改用Token*，我们就需要记得delete这个指针，而且就算我们全都delete了，在程序碰到异常之后会执行throw语句，然后从对应的catch语句后开始执行，可能会导致有指针未被delete，从而造成内存泄露。
+如果使用Tokenptr，我们就不用考虑delete，在程序碰到异常抛出后也会自动析构delete指针，有效的防止了内存泄漏的情况出现。
+
+3.operator了”<<"，利用Token类里的 toString获取token然后重载“<<"来输出token。
+
+4.利用C++异常处理，throw关键字和try...catch语句。在tokenizer.cpp文件中的nexttoken函数中，对输入的字符进行了判断，如果有非法的输入，对于不同的情况将会用不同throw语句抛出异常，比如#后如果跟的不是t或者f，程序就会throw"Unexpected character after #"，然后在main.cpp中将错误信息输出。
+
+5.deque相比vector的存取效率较高，性能较好。
+deque支持在两端进行push和pop，在rjsj_test.h文件中使用了pop_front，如果用vector则无法这样做。
