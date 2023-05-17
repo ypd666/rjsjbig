@@ -7,5 +7,8 @@ class SyntaxError : public std::runtime_error {
 public:
     using runtime_error::runtime_error;
 };
-
+class MatchError : public std::runtime_error {
+public:
+    using runtime_error::runtime_error;
+};
 #endif

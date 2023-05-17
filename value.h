@@ -53,8 +53,8 @@ private:
     std::shared_ptr<Value> left;
     std::shared_ptr<Value> right;
 public:
-    inline static int iff = 0;
-    PairValue(ValuePtr left, ValuePtr right): Value(), left(left), right(right) {}
+    inline static bool iff ;
+    PairValue(std::shared_ptr<Value> left, std::shared_ptr<Value> right): Value(), left(left), right(right) {}
     std::string toString() const override;
     ~PairValue() = default;
 };

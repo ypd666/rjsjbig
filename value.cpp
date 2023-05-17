@@ -26,12 +26,13 @@ std::string PairValue::toString() const {
         return left->toString();
     } 
     else if (typeid(*right) != typeid(PairValue)) {
-        return left->toString() + "."+ right->toString();
+        return left->toString() + " . "+ right->toString();
     } 
     else {std::string s;
         if (!iff) {
             iff = 1;
             s = "(" + left->toString() +' '+ right->toString() + ")";
+            iff = 0;
             return s;
         } else {
             s = left->toString() +' ' + right->toString();
