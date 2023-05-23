@@ -1,7 +1,68 @@
+#include "./error.h"
 #include"./value.h"
+#include<string>
 #include <iomanip>
 #include <sstream>
 
+std::optional<std::string> SymbolValue::asSymbol() const {
+    return name;
+}
+std::optional<double> NumericValue::asNumber() const {
+    return value;
+}
+std::optional<bool> BooleanValue::asBoolean() const {
+    return value;
+}
+
+std::vector<ValuePtr> Value::toVector() {
+    std::vector<ValuePtr> v;
+        addtoVector(v);
+    if (!v.empty())
+        return v;
+    else
+        throw toVectorError("to vector fault");//right nullptr throw?
+}
+
+void BooleanValue::addtoVector(std::vector<ValuePtr>& v) {
+    v.emplace_back(std::make_shared<BooleanValue>(value));
+}
+
+void NumericValue::addtoVector(std::vector<ValuePtr>& v) {
+    v.emplace_back(std::make_shared<NumericValue>(value));
+}
+
+void StringValue::addtoVector(std::vector<ValuePtr>& v) {
+    v.emplace_back(std::make_shared<StringValue>(value));
+}
+
+void SymbolValue::addtoVector(std::vector<ValuePtr>& v) {
+    v.emplace_back(std::make_shared<SymbolValue>(name));
+}
+
+void NilValue::addtoVector(std::vector<ValuePtr>& v) {
+    v.emplace_back(std::make_shared<NilValue>());
+}
+
+void PairValue::addtoVector(std::vector<ValuePtr>& v) {
+    v.emplace_back(left);
+    if (right != nullptr) right->addtoVector(v);
+}
+
+
+bool Value::isNil(ValuePtr& value) {
+    return typeid(*value) == typeid(NilValue) ?  true : false;
+}
+
+bool Value::isSelfEvaluating(ValuePtr value) {
+    if (typeid(*value) == typeid(BooleanValue))
+        return true;
+    else if (typeid(*value) == typeid(NumericValue))
+        return true;
+    else if (typeid(*value) == typeid(StringValue))
+        return true;
+    else
+        return false;
+}
 
 
 std::string BooleanValue::toString() const {
@@ -31,11 +92,11 @@ std::string PairValue::toString() const {
     else {std::string s;
         if (!iff) {
             iff = 1;
-            s = "(" + left->toString() +' '+ right->toString() + ")";
+            s = "(" +((typeid(*left) == typeid(PairValue))? "(" + left->toString() + ")": left->toString()) +' ' +right->toString() + ")";
             iff = 0;
             return s;
         } else {
-            s = left->toString() +' ' + right->toString();
+            s = ((typeid(*left) == typeid(PairValue))? "(" + left->toString() + ")": left->toString()) +' ' + right->toString();
             return s;
         }
     }
