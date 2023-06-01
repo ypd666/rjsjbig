@@ -1,8 +1,8 @@
-#include "./error.h"
-#include"./parser.h"
-#include"./value.h"
-#include<memory>
-#include<iostream>
+#include"parser.h"
+#include"error.h"
+#include<unordered_map>
+
+
 
 using ValuePtr = std::shared_ptr<Value>;
 ValuePtr Parser::parse() {
@@ -59,7 +59,7 @@ ValuePtr Parser::parseTails() {
     if (tokens.front()->getType() == TokenType::RIGHT_PAREN) {
             tokens.pop_front();
             return std::make_shared<NilValue>();
-        }
+    }
         auto car = this->parse();
         if (tokens.front()->getType() == TokenType::DOT) {
             tokens.pop_front();

@@ -1,8 +1,9 @@
 #ifndef PARSER_H
 #define PARSER_H
-#include"./token.h"
-#include"./value.h"
+
+#include"value.h"
 #include<deque>
+#include"token.h"
 
 
 class Parser {

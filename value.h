@@ -1,7 +1,10 @@
 #ifndef VALUE_H
 #define VALUE_H
-#include"./token.h"
+#include<string>
+#include<iostream>
+#include<memory>
 #include<vector>
+#include<optional>
 class Value;
 using ValuePtr = std::shared_ptr<Value>;
 class Value {
@@ -13,7 +16,7 @@ public:
     virtual std::vector<ValuePtr> toVector();
     static bool isNil(ValuePtr& value);
     static bool isSelfEvaluating(ValuePtr value);
-    std::vector<ValuePtr> toVector(ValuePtr value);
+   std::vector<ValuePtr> toVector(ValuePtr value);
     virtual std::optional<std::string> asSymbol() const {
         return std::nullopt;
     }
@@ -88,9 +91,14 @@ public:
 using BuiltinFuncType = ValuePtr(const std::vector<ValuePtr>&);
 class BuiltinProcValue : public Value {
     BuiltinFuncType* func;
+    void addtoVector(std::vector<ValuePtr>& v) override {}
 
 public:
+    BuiltinProcValue(BuiltinFuncType* t) : Value(), func(t) {}
     // 直接返回 #<procedure> 就可以，我们不做更多要求。
     std::string toString() const override;
-}
+    ValuePtr run(std::vector<ValuePtr>& v) const {
+        return func(v);
+    }
+};
 #endif  // !VALUE_H

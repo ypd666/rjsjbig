@@ -1,5 +1,5 @@
 #include "./error.h"
-#include"./value.h"
+#include "./value.h"
 #include<string>
 #include <iomanip>
 #include <sstream>
@@ -101,6 +101,10 @@ std::string PairValue::toString() const {
         }
     }
 }
+std::string BuiltinProcValue::toString() const {
+    return "#<procedure>";
+}
+
 std::ostream& operator<<(std::ostream& os, const Value& value) {
     return os << value.toString();
 }
