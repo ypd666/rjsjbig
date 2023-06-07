@@ -17,5 +17,5 @@ public:
     std::vector<ValuePtr> evalList(ValuePtr expr);
     ValuePtr apply(ValuePtr proc, std::vector<ValuePtr> args);
 };
-
+using SpecialFormType = ValuePtr(const std::vector<ValuePtr>&, EvalEnv&);
 #endif

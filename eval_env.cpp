@@ -10,8 +10,7 @@ ValuePtr EvalEnv::eval(ValuePtr expr) {
     if (Value::isSelfEvaluating(expr)) {
         return expr;
     } else if (Value::isNil(expr)) {
-        return expr;
-        //throw LispError("Evaluating nil is prohibited.");
+        throw LispError("Evaluating nil is prohibited.");
     } 
     else if (typeid(*expr) == typeid(PairValue)) { 
         std::vector<ValuePtr> v = expr->toVector();
@@ -27,9 +26,10 @@ ValuePtr EvalEnv::eval(ValuePtr expr) {
         }else if (v[0]->asSymbol() != "define"s) {
                 ValuePtr proc = this->eval(v[0]);
                 std::vector<ValuePtr> args = evalList(vt->right);
+                std::cout << proc->toString() << "\n";
                 return this->apply(proc, args);  // 最后用 EvalEnv::apply 实现调用
             }
-    } else if (auto name = expr->asSymbol()) {
+    }  else if (auto name = expr->asSymbol()) {
         if (symbollist.contains(*name)) {
             return symbollist[*name];
         } else {
@@ -42,11 +42,17 @@ ValuePtr EvalEnv::eval(ValuePtr expr) {
 }
 std::vector<ValuePtr> EvalEnv::evalList(ValuePtr expr) {
     std::vector<ValuePtr> result;
+    std::ranges::transform(expr->toVector(), std::back_inserter(result),
+                           [this](ValuePtr v) { return this->eval(v); });
+    return result;
+}
+/* std::vector<ValuePtr> EvalEnv::evalList(ValuePtr expr) {
+    std::vector<ValuePtr> result;
     auto v = expr->toVector();
     std::ranges::transform(v, std::back_inserter(result),
                            [this](ValuePtr v) { return this->eval(v); });
     return result;
-}
+}*/
 ValuePtr EvalEnv::apply(ValuePtr proc, std::vector<ValuePtr> args) {
     if (typeid(*proc) == typeid(BuiltinProcValue)) {
         auto p = dynamic_cast<const BuiltinProcValue*>(proc.get());

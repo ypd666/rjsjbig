@@ -42,9 +42,11 @@ private:
     double value;
 
 public:
+    
     NumericValue(double value) : Value(), value(value) {}
     void addtoVector(std::vector<ValuePtr>& v) override;
     std::string toString() const override;
+    
     ~NumericValue() = default;
     std::optional<double> asNumber() const override;
 };
@@ -84,6 +86,12 @@ public:
     inline static bool iff ;
     PairValue(std::shared_ptr<Value> left, std::shared_ptr<Value> right): Value(), left(left), right(right) {}
     void addtoVector(std::vector<ValuePtr>& v) override;
+    ValuePtr getCar() {
+        return left;
+    }
+    ValuePtr getCdr() {
+        return right;
+    }
     std::string toString() const override;
     ~PairValue() = default;
 };

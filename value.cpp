@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <sstream>
 
+
 std::optional<std::string> SymbolValue::asSymbol() const {
     return name;
 }
@@ -40,14 +41,13 @@ void SymbolValue::addtoVector(std::vector<ValuePtr>& v) {
 }
 
 void NilValue::addtoVector(std::vector<ValuePtr>& v) {
-    v.emplace_back(std::make_shared<NilValue>());
+    return;
 }
 
 void PairValue::addtoVector(std::vector<ValuePtr>& v) {
     v.emplace_back(left);
     if (right != nullptr) right->addtoVector(v);
 }
-
 
 bool Value::isNil(ValuePtr& value) {
     return typeid(*value) == typeid(NilValue) ?  true : false;
