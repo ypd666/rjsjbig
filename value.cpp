@@ -17,37 +17,26 @@ std::optional<bool> BooleanValue::asBoolean() const {
 
 std::vector<ValuePtr> Value::toVector() {
     std::vector<ValuePtr> v;
-        addtoVector(v);
-    if (!v.empty())
-        return v;
-    else
-        throw toVectorError("to vector fault");//right nullptr throw?
+    if (typeid(*this) == typeid(PairValue)) {
+        auto vt = static_cast<PairValue*>(this);
+        v.emplace_back(vt->left);
+        while (typeid(*(vt->right)) != typeid(NilValue)) {
+            if (typeid(*(vt->right)) != typeid(PairValue))
+                throw toVectorError("to vector fault");
+            else {
+                vt = static_cast<PairValue*>((vt->right).get());
+                v.emplace_back(vt->left);
+            }
+        }
+    } else
+        throw toVectorError("to vector fault");
+    return v; 
 }
 
-void BooleanValue::addtoVector(std::vector<ValuePtr>& v) {
-    v.emplace_back(std::make_shared<BooleanValue>(value));
-}
 
-void NumericValue::addtoVector(std::vector<ValuePtr>& v) {
-    v.emplace_back(std::make_shared<NumericValue>(value));
-}
 
-void StringValue::addtoVector(std::vector<ValuePtr>& v) {
-    v.emplace_back(std::make_shared<StringValue>(value));
-}
 
-void SymbolValue::addtoVector(std::vector<ValuePtr>& v) {
-    v.emplace_back(std::make_shared<SymbolValue>(name));
-}
 
-void NilValue::addtoVector(std::vector<ValuePtr>& v) {
-    return;
-}
-
-void PairValue::addtoVector(std::vector<ValuePtr>& v) {
-    v.emplace_back(left);
-    if (right != nullptr) right->addtoVector(v);
-}
 
 bool Value::isNil(ValuePtr& value) {
     return typeid(*value) == typeid(NilValue) ?  true : false;

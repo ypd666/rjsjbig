@@ -12,11 +12,9 @@ public:
     Value() = default;
     virtual ~Value() = default;
     virtual std::string toString() const=0;
-    virtual void addtoVector(std::vector<ValuePtr>& v) = 0;
-    virtual std::vector<ValuePtr> toVector();
     static bool isNil(ValuePtr& value);
     static bool isSelfEvaluating(ValuePtr value);
-   std::vector<ValuePtr> toVector(ValuePtr value);
+    std::vector<ValuePtr> toVector();
     virtual std::optional<std::string> asSymbol() const {
         return std::nullopt;
     }
@@ -32,7 +30,6 @@ private:
     bool value;
 public:
     BooleanValue(bool value):Value(),value(value){}
-    void addtoVector(std::vector<ValuePtr>& v) override;
     std::string toString() const override;
     ~BooleanValue() = default;
     std::optional<bool> asBoolean() const override;
@@ -44,7 +41,6 @@ private:
 public:
     
     NumericValue(double value) : Value(), value(value) {}
-    void addtoVector(std::vector<ValuePtr>& v) override;
     std::string toString() const override;
     
     ~NumericValue() = default;
@@ -56,14 +52,12 @@ private:
 
 public:
     StringValue(std::string value) : Value(), value(value) {}
-    void addtoVector(std::vector<ValuePtr>& v) override;
     std::string toString() const override;
     ~StringValue() = default;
 };
 class NilValue : public Value {
 public:
     std::string toString() const override;
-    void addtoVector(std::vector<ValuePtr>& v) override;
 };
 class SymbolValue : public Value {
 private:
@@ -71,8 +65,8 @@ private:
 
 public:
     SymbolValue(std::string name) : Value(), name(name) {}
-    void addtoVector(std::vector<ValuePtr>& v) override;
     std::string toString() const override;
+    
     ~SymbolValue() = default;
     std::optional<std::string> asSymbol() const override;
 };
@@ -85,7 +79,6 @@ public:
     ValuePtr right;
     inline static bool iff ;
     PairValue(std::shared_ptr<Value> left, std::shared_ptr<Value> right): Value(), left(left), right(right) {}
-    void addtoVector(std::vector<ValuePtr>& v) override;
     ValuePtr getCar() {
         return left;
     }
@@ -99,7 +92,6 @@ public:
 using BuiltinFuncType = ValuePtr(const std::vector<ValuePtr>&);
 class BuiltinProcValue : public Value {
     BuiltinFuncType* func;
-    void addtoVector(std::vector<ValuePtr>& v) override {}
 
 public:
     BuiltinProcValue(BuiltinFuncType* t) : Value(), func(t) {}
