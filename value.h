@@ -15,6 +15,7 @@ public:
     static bool isNil(ValuePtr& value);
     static bool isSelfEvaluating(ValuePtr value);
     std::vector<ValuePtr> toVector();
+    bool isNumber() const;
     virtual std::optional<std::string> asSymbol() const {
         return std::nullopt;
     }

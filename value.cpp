@@ -4,6 +4,9 @@
 #include <iomanip>
 #include <sstream>
 
+bool Value::isNumber() const {
+    return  (typeid(*this)==typeid(NumericValue))? true:false;
+}
 
 std::optional<std::string> SymbolValue::asSymbol() const {
     return name;

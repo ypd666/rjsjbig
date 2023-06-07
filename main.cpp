@@ -17,7 +17,7 @@ struct TestCtx {
         return value->toString();
     }
 };*/
-/*#include "rjsj_test.hpp"
+#include "rjsj_test.hpp"
 struct TestCtx {
     EvalEnv env;
     std::string eval(std::string input) {
@@ -27,13 +27,13 @@ struct TestCtx {
         auto result = env.eval(std::move(value));
         return result->toString();
     }
-};*/
+};
 
 int main() {
     EvalEnv env;
     //RJSJ_TEST(TestCtx, Lv2, Lv2Only);
      //RJSJ_TEST(TestCtx, Lv2, Lv3);
-    //RJSJ_TEST(TestCtx, Lv2, Lv3, Lv4);
+    RJSJ_TEST(TestCtx, Lv2, Lv3, Lv4);
     while (true) {
         try { 
             std::cout << ">>> " ;

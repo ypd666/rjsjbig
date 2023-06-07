@@ -1,5 +1,5 @@
 
-#include "./eval_env.h"
+#include "./forms.h"
 #include "./error.h"
 
 
@@ -15,7 +15,7 @@ ValuePtr EvalEnv::eval(ValuePtr expr) {
     else if (typeid(*expr) == typeid(PairValue)) { 
         std::vector<ValuePtr> v = expr->toVector();
         auto vt = static_cast<PairValue*>(expr.get());
-        if (v[0]->asSymbol() == "define"s) {
+        if (SPECIAL_FORMS.contains(*(v[0]->asSymbol()))) {
             if (auto name = v[1]->asSymbol()) {
                 symbollist[*name] =eval(v[2]) ;
                 return std::make_shared<NilValue>();
@@ -23,10 +23,9 @@ ValuePtr EvalEnv::eval(ValuePtr expr) {
                 throw LispError("Malformed define.");
             }
             
-        }else if (v[0]->asSymbol() != "define"s) {
+        }else  {
                 ValuePtr proc = this->eval(v[0]);
                 std::vector<ValuePtr> args = evalList(vt->right);
-                std::cout << proc->toString() << "\n";
                 return this->apply(proc, args);  // 最后用 EvalEnv::apply 实现调用
             }
     }  else if (auto name = expr->asSymbol()) {
