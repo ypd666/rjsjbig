@@ -31,9 +31,12 @@ std::vector<ValuePtr> Value::toVector() {
                 v.emplace_back(vt->left);
             }
         }
-    } else
+        return v;
+    } else if (typeid(*this) == typeid(NilValue)) {
+        return {};
+    }else
         throw toVectorError("to vector fault");
-    return v; 
+     
 }
 
 
