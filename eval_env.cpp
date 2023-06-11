@@ -15,19 +15,19 @@ ValuePtr EvalEnv::eval(ValuePtr expr) {
     else if (typeid(*expr) == typeid(PairValue)) { 
         std::vector<ValuePtr> v = expr->toVector();
         auto vt = static_cast<PairValue*>(expr.get());
-        if (SPECIAL_FORMS.contains(*(v[0]->asSymbol()))) {
-            if (auto name = v[1]->asSymbol()) {
-                symbollist[*name] =eval(v[2]) ;
-                return std::make_shared<NilValue>();
-            } else {
-                throw LispError("Malformed define.");
-            }
-            
-        }else  {
+        if (auto name = vt->getCar()->asSymbol()) {
+            //std::cout << *name << "------\n";
+            if (SPECIAL_FORMS.contains(*name)) {
+                return SPECIAL_FORMS[*name](vt->getCdr()->toVector(), *this);
+            }else   {
                 ValuePtr proc = this->eval(v[0]);
                 std::vector<ValuePtr> args = evalList(vt->right);
                 return this->apply(proc, args);  // 最后用 EvalEnv::apply 实现调用
             }
+            //else 
+                //throw LispError("404 not found");
+        }     
+        
     }  else if (auto name = expr->asSymbol()) {
         if (symbollist.contains(*name)) {
             return symbollist[*name];

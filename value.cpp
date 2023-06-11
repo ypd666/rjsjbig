@@ -99,6 +99,9 @@ std::string PairValue::toString() const {
 std::string BuiltinProcValue::toString() const {
     return "#<procedure>";
 }
+std::string LambdaValue::toString() const {
+    return "#<procedure>";
+}
 
 std::ostream& operator<<(std::ostream& os, const Value& value) {
     return os << value.toString();

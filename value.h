@@ -6,6 +6,7 @@
 #include<vector>
 #include<optional>
 class Value;
+class EvalEnv;
 using ValuePtr = std::shared_ptr<Value>;
 class Value {
 public:
@@ -101,5 +102,15 @@ public:
     ValuePtr run(std::vector<ValuePtr>& v) const {
         return func(v);
     }
+};
+class LambdaValue : public Value {
+private:
+    std::vector<std::string> params;
+    std::vector<ValuePtr> body;
+    // [...]
+public:
+    LambdaValue() : Value() {}
+    LambdaValue(const std::vector<std::string>& p,const std::vector<ValuePtr>& v): Value(),params(p), body(v) {}
+    std::string toString() const override;  // 如前所述，返回 #<procedure> 即可
 };
 #endif  // !VALUE_H
