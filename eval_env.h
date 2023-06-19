@@ -1,9 +1,11 @@
 #ifndef EVAL_ENV_H
 #define EVAL_ENV_H
 #include"./builtins.h"
+#include"./eval_env.h"
 #include<unordered_map>
 #include <algorithm>
 #include <iterator>
+#include<functional>
 
 //ValuePtr addVal = std::make_shared<BuiltinProcValue>(&add);
 //ValuePtr printVal = std::make_shared<BuiltinProcValue>(&print);
@@ -34,7 +36,11 @@ public:
         symbollist["remainder"] = std::make_shared<BuiltinProcValue>(&mod);
         symbollist["modulo"] = std::make_shared<BuiltinProcValue>(&modulo);
         symbollist["cons"] = std::make_shared<BuiltinProcValue>(&cons);
-        
+        this->defineBinding("eval",
+                  std::make_shared<BuiltinProcValue>(
+                            [this](const std::vector<ValuePtr>& params) {
+                                    this->eval(params[0]);
+                            }));
     }
     
     std::shared_ptr<EvalEnv> parent;
@@ -46,7 +52,7 @@ public:
         const std::vector<ValuePtr>& args);
     ValuePtr lookupBinding(const std::string&);
     ValuePtr apply(ValuePtr proc, std::vector<ValuePtr> args);
-    
+    void defineBinding(const std::string& s, ValuePtr v);
 };
 
 

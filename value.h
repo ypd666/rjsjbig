@@ -5,6 +5,7 @@
 #include<memory>
 #include<vector>
 #include<optional>
+#include<functional>
 class Value;
 class EvalEnv;
 using ValuePtr = std::shared_ptr<Value>;
@@ -93,10 +94,14 @@ public:
 
 using BuiltinFuncType = ValuePtr(const std::vector<ValuePtr>&);
 class BuiltinProcValue : public Value {
-    BuiltinFuncType* func;
+    std::function<BuiltinFuncType>func;
 
 public:
-    BuiltinProcValue(BuiltinFuncType* t) : Value(), func(t) {}
+    BuiltinProcValue(std::function<ValuePtr(const std::vector<ValuePtr>& params)>t): Value() {
+        auto a = [t](const std::vector<ValuePtr>& params) { return t(params); };
+         func =a;
+    }
+
     // 直接返回 #<procedure> 就可以，我们不做更多要求。
     std::string toString() const override;
     ValuePtr run(std::vector<ValuePtr>& v) const {

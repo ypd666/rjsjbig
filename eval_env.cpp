@@ -6,6 +6,10 @@
 
 using namespace std::literals;
 
+void EvalEnv::defineBinding(const std::string& s,ValuePtr v) {
+    symbollist[s] = v;
+}
+
 ValuePtr EvalEnv::lookupBinding(const std::string& s) {
     //std::cout << s << "\n";
     EvalEnv* env{this};
