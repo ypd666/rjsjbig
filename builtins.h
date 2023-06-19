@@ -20,7 +20,7 @@ ValuePtr Abs(const std::vector<ValuePtr>& params);
 ValuePtr expt(const std::vector<ValuePtr>& params);
 ValuePtr quotient(const std::vector<ValuePtr>& params);
 ValuePtr modulo(const std::vector<ValuePtr>& params);
-ValuePtr remainder(const std::vector<ValuePtr>& params);
+ValuePtr mod(const std::vector<ValuePtr>& params);
 
 //比较库
 
@@ -33,6 +33,6 @@ ValuePtr equal(const std::vector<ValuePtr>& params);
 ValuePtr NOT(const std::vector<ValuePtr>& params);
 ValuePtr equal_num(const std::vector<ValuePtr>& params);
 ValuePtr even(const std::vector<ValuePtr>& params);
-ValuePtr odd(const std::vector<ValuePtr>& params)
+ValuePtr odd(const std::vector<ValuePtr>& params);
 
 #endif

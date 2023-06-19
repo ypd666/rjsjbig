@@ -141,7 +141,7 @@ ValuePtr modulo(const std::vector<ValuePtr>& params) {
         }
         return std::make_shared<NumericValue>(result);
 }
-ValuePtr remainder(const std::vector<ValuePtr>& params) {
+ValuePtr mod(const std::vector<ValuePtr>& params) {
         if (params.size()  != 2) throw LispError("2 arguments needed");
         double result = 0.0;
         if (auto k1 = params[0]->asNumber())
