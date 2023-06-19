@@ -1,8 +1,16 @@
 #include "./error.h"
 #include "./value.h"
+#include"eval_env.h"
 #include<string>
 #include <iomanip>
 #include <sstream>
+
+ValuePtr LambdaValue::apply(const std::vector<ValuePtr>& args) const{
+    auto kid = this->env->createChild(this->params, args);
+    ValuePtr v;
+    for (const auto& i : this->body) v = kid->eval(i);
+    return v;
+}
 
 bool Value::isNumber() const {
     return  (typeid(*this)==typeid(NumericValue))? true:false;

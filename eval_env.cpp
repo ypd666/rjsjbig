@@ -6,7 +6,27 @@
 
 using namespace std::literals;
 
+ValuePtr EvalEnv::lookupBinding(const std::string& s) {
+    //std::cout << s << "\n";
+    EvalEnv* env{this};
+    do {
+        if (env->symbollist.count(s))
+            return env->symbollist[s];
+        else
+            env = env->parent.get();
+    } while (env);
+    throw LispError("Do not find variation " + s + " !");
+}
+std::shared_ptr<EvalEnv> EvalEnv::createChild(const std::vector<std::string>& params, const std::vector<ValuePtr>& args) {
+    if (args.size() != params.size()) throw LispError("arguments not matched");
+    std::shared_ptr<EvalEnv> child{new EvalEnv};
+    child->symbollist.clear();
+    child->parent = this->shared_from_this();
+    for (int i = 0; i < params.size(); i++) child->symbollist[params[i]] = args[i];
+    return child;
+}
 ValuePtr EvalEnv::eval(ValuePtr expr) {
+    
     if (Value::isSelfEvaluating(expr)) {
         return expr;
     } else if (Value::isNil(expr)) {
@@ -15,7 +35,8 @@ ValuePtr EvalEnv::eval(ValuePtr expr) {
     else if (typeid(*expr) == typeid(PairValue)) { 
         std::vector<ValuePtr> v = expr->toVector();
         auto vt = static_cast<PairValue*>(expr.get());
-        if (auto name = vt->getCar()->asSymbol()) {
+        while (typeid(*v[0]) == typeid(PairValue)) v[0] = eval(v[0]);
+        if (auto name = v[0]->asSymbol()) {
             //std::cout << *name << "------\n";
             if (SPECIAL_FORMS.contains(*name)) {
                 return SPECIAL_FORMS[*name](vt->getCdr()->toVector(), *this);
@@ -26,11 +47,16 @@ ValuePtr EvalEnv::eval(ValuePtr expr) {
             }
             //else 
                 //throw LispError("404 not found");
-        }     
+        } else {
+            ValuePtr proc = v[0];
+            std::vector<ValuePtr> args = evalList(vt->right);
+            return apply(proc, args);  // 最后用 EvalEnv::apply 实现调用
+        }
         
     }  else if (auto name = expr->asSymbol()) {
-        if (symbollist.contains(*name)) {
-            return symbollist[*name];
+        //std::cout << *name << "\n";
+        if (auto value = lookupBinding(*name)) {
+            return value;
         } else {
             throw LispError("Variable " + *name + " not defined.");
         }
@@ -57,7 +83,11 @@ ValuePtr EvalEnv::apply(ValuePtr proc, std::vector<ValuePtr> args) {
         auto p = dynamic_cast<const BuiltinProcValue*>(proc.get());
         return p->run(args);
         // 调用内置过程
-    } else {
+    } else if (typeid(*proc) == typeid(LambdaValue)) {
+        auto p = dynamic_cast<const LambdaValue*>(proc.get());
+        return p->apply(args);
+    }
+    else {
         throw LispError("Unimplemented");
     }
 }

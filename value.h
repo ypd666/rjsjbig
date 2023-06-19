@@ -107,10 +107,14 @@ class LambdaValue : public Value {
 private:
     std::vector<std::string> params;
     std::vector<ValuePtr> body;
+    std::shared_ptr<EvalEnv> env;
     // [...]
 public:
-    LambdaValue() : Value() {}
-    LambdaValue(const std::vector<std::string>& p,const std::vector<ValuePtr>& v): Value(),params(p), body(v) {}
+    LambdaValue() : Value(),env(nullptr) {}
+    LambdaValue(const std::vector<std::string>& p,
+                const std::vector<ValuePtr>& v, std::shared_ptr<EvalEnv>e)
+        : Value(), params(p), body(v),env(e) {}
     std::string toString() const override;  // 如前所述，返回 #<procedure> 即可
+    ValuePtr apply(const std::vector<ValuePtr>& args)const;
 };
 #endif  // !VALUE_H

@@ -2,12 +2,14 @@
 #include"./error.h"
 ValuePtr defineForm(const std::vector<ValuePtr>& args, EvalEnv& env) {
     if (auto name = args[0]->asSymbol()) {
+        //std::cout << *name << "\n";
         env.symbollist[*name]= env.eval(args[1]);
+        
         return std::make_shared<NilValue>();
     } 
     if (auto ptr = dynamic_cast<PairValue*>(args[0].get())) {
         std::vector<ValuePtr> v{ptr->getCdr()};
-        for (int i = 1; i < args.size(); ++i) v.emplace_back(args[i]);
+        for (int i = 1; i < args.size(); i++) v.emplace_back(args[i]);
         env.symbollist[ptr->getCar()->toString()] = lambdaForm(v, env);
         return std::make_shared<NilValue>();
     }
@@ -76,7 +78,9 @@ ValuePtr lambdaForm(const std::vector<ValuePtr>& args, EvalEnv& env) {
         std::transform(p1.begin(), p1.end(), std::back_inserter(_p1),
                        [](ValuePtr p) { return p->toString(); });
         std::vector<ValuePtr> p2(args.begin()+1, args.end());
-        return std::make_shared<LambdaValue>(_p1, p2);
+        //auto a = env.shared_from_this();
+        //std::cout << a->symbollist.size() << "\n";
+        return std::make_shared<LambdaValue>(_p1, p2,env.shared_from_this());
     } else
         throw LispError("more arguments needed");
 }
