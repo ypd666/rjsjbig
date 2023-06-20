@@ -86,7 +86,7 @@ std::string SymbolValue::toString() const {
     return name;
 }
 std::string PairValue::toString() const {
-    if (typeid(*right) == typeid(NilValue)) {
+    /* if (typeid(*right) == typeid(NilValue)) {
         return left->toString();
     } 
     else if (typeid(*right) != typeid(PairValue)) {
@@ -102,6 +102,33 @@ std::string PairValue::toString() const {
             s = ((typeid(*left) == typeid(PairValue))? "(" + left->toString() + ")": left->toString()) +' ' + right->toString();
             return s;
         }
+    }*/
+    if (typeid(*right) == typeid(NilValue)) {
+        if (iff)
+            return ((typeid(*left) == typeid(PairValue))? "(" + left->toString() + ")": left->toString());
+        else {
+            iff = 1;
+            std::string s = "(" +((typeid(*left) == typeid(PairValue))? "(" + left->toString() + ")": left->toString()) +")";
+            iff = 0;
+            return s;
+        }
+    } else if (typeid(*right) != typeid(PairValue)) {
+        if (iff)
+            return ((typeid(*left) == typeid(PairValue))? "(" + left->toString() + ")": left->toString()) + " . " + right->toString();
+        else {
+            iff = 1;
+            std::string s = "(" +((typeid(*left) == typeid(PairValue))? "(" + left->toString() + ")": left->toString()) + " . " + right->toString() + ")";
+            iff = 0;
+            return s;
+        }
+    } else {
+        if (!iff) {
+            iff = 1;
+            std::string s = "(" + ((typeid(*left) == typeid(PairValue))? "(" + left->toString() + ")": left->toString()) +" " + right->toString() + ")";
+            iff = 0;
+            return s;
+        } else
+            return ((typeid(*left) == typeid(PairValue)) ? "(" + left->toString() + ")" : left->toString()) + " " + right->toString();
     }
 }
 std::string BuiltinProcValue::toString() const {

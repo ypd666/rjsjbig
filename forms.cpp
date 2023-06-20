@@ -84,6 +84,67 @@ ValuePtr lambdaForm(const std::vector<ValuePtr>& args, EvalEnv& env) {
     } else
         throw LispError("more arguments needed");
 }
+ValuePtr letForm(const std::vector<ValuePtr>& args, EvalEnv& env) {
+    if (args.size()  >= 2) {
+        auto relation = args[0]->toVector();
+        std::vector<std::string> v1;
+        std::vector<ValuePtr> v2;
+        for (int i = 0; i < relation.size(); ++i) {
+            auto v = relation[i]->toVector();
+            v1.emplace_back(v[0]->toString());
+            v2.emplace_back(env.eval(v[1]));
+        }
+        auto E = env.createChild(v1, v2);
+        ValuePtr res;
+        for (int i = 1; i < args.size() ; ++i) res = E->eval(args[i]);
+        return res;
+    } else
+        throw LispError("More arguments needed");
+}
+ValuePtr condForm(const std::vector<ValuePtr>& args, EvalEnv& env) {
+    if (args.size()  >= 2) {
+        ValuePtr res;
+        for (int i = 0; i < args.size(); ++i) {
+            auto relation = args[i]->toVector();
+            if (relation.size() == 1) return relation[0];
+            if (*env.eval(relation[0])->asBoolean()) {
+                res = env.eval(relation[1]);
+                break;
+            }
+        }
+        return res;
+    } else
+        throw LispError("More arguments needed");
+}
+ValuePtr beginForm(const std::vector<ValuePtr>& args, EvalEnv& env) {
+    if (args.size()  >= 1) {
+        ValuePtr v;
+        for (int i = 0; i < args.size(); ++i) v = env.eval(args[i]);
+        return v;
+    } else
+        throw LispError("at least 1 argument needed");
+}
+ValuePtr quasiquoteForm(const std::vector<ValuePtr>& args, EvalEnv& env) {
+    if (args.size()  == 1) {
+        if (typeid(*args[0]) == typeid(PairValue)) {
+            auto v1 = args[0]->toVector();
+            if (auto a = v1[0]->asSymbol())
+                if (a.value() == "unquote") return env.eval(v1[1]);
+            for (auto& i : v1)
+                if (auto p = dynamic_cast<PairValue*>(i.get()))
+                    if (auto s = p->getCar()->asSymbol())
+                        if (*s == "unquote") {
+                            if (auto pr = dynamic_cast<PairValue*>(p->getCdr().get()))
+                                i = env.eval(pr->getCar());
+                            else
+                                throw LispError("wrong unquote");
+                        }
+            return make_list(v1);
+        } else
+            return args[0];
+    } else
+        throw LispError("1 argument needed");
+}
 
 std::unordered_map<std::string, SpecialFormType*> SPECIAL_FORMS{
     {"define", defineForm}, 
@@ -92,4 +153,9 @@ std::unordered_map<std::string, SpecialFormType*> SPECIAL_FORMS{
     {"and", andForm},
     {"or", orForm},       
     {"lambda",lambdaForm},
+    {"cond", condForm}, 
+    {"let", letForm},
+    {"begin", beginForm},
+    {"quasiquote", quasiquoteForm},
+    {"unquote",quoteForm},
 };

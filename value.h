@@ -56,6 +56,9 @@ private:
 public:
     StringValue(std::string value) : Value(), value(value) {}
     std::string toString() const override;
+    std::string getStr() const {
+        return value;
+    }
     ~StringValue() = default;
 };
 class NilValue : public Value {
@@ -95,12 +98,8 @@ public:
 using BuiltinFuncType = ValuePtr(const std::vector<ValuePtr>&);
 class BuiltinProcValue : public Value {
     std::function<BuiltinFuncType>func;
-
 public:
-    BuiltinProcValue(std::function<ValuePtr(const std::vector<ValuePtr>& params)>t): Value() {
-        auto a = [t](const std::vector<ValuePtr>& params) { return t(params); };
-         func =a;
-    }
+    BuiltinProcValue(std::function<BuiltinFuncType> t) : Value(),func(t) {}
 
     // 直接返回 #<procedure> 就可以，我们不做更多要求。
     std::string toString() const override;

@@ -30,7 +30,7 @@ std::shared_ptr<EvalEnv> EvalEnv::createChild(const std::vector<std::string>& pa
     return child;
 }
 ValuePtr EvalEnv::eval(ValuePtr expr) {
-    
+    //std::cout << expr->toString() << "\n";
     if (Value::isSelfEvaluating(expr)) {
         return expr;
     } else if (Value::isNil(expr)) {
@@ -75,13 +75,7 @@ std::vector<ValuePtr> EvalEnv::evalList(ValuePtr expr) {
                            [this](ValuePtr v) { return this->eval(v); });
     return result;
 }
-/* std::vector<ValuePtr> EvalEnv::evalList(ValuePtr expr) {
-    std::vector<ValuePtr> result;
-    auto v = expr->toVector();
-    std::ranges::transform(v, std::back_inserter(result),
-                           [this](ValuePtr v) { return this->eval(v); });
-    return result;
-}*/
+
 ValuePtr EvalEnv::apply(ValuePtr proc, std::vector<ValuePtr> args) {
     if (typeid(*proc) == typeid(BuiltinProcValue)) {
         auto p = dynamic_cast<const BuiltinProcValue*>(proc.get());
